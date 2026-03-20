@@ -12,9 +12,10 @@ const WIDTH = 1920;
 const HEIGHT = 1080;
 
 async function main() {
+  const isCI = !!process.env.CI;
   const browser = await puppeteer.launch({
     headless: true,
-    args: [`--window-size=${WIDTH},${HEIGHT}`],
+    args: [`--window-size=${WIDTH},${HEIGHT}`, ...(isCI ? ['--no-sandbox'] : [])],
   });
 
   const page = await browser.newPage();
