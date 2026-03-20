@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BuzzMaster — Blob Shapes Demo</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Avenir', 'Avenir Next', system-ui, -apple-system, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      padding: 40px;
+      justify-content: center;
+    }
+
+    .slide-frame {
+      width: 720px;
+      height: 405px;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    }
+
+    .slide-frame h2 {
+      position: relative;
+      z-index: 2;
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .slide-frame p {
+      position: relative;
+      z-index: 2;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #333;
+      max-width: 300px;
+    }
+
+    .label {
+      position: absolute;
+      bottom: 12px;
+      right: 16px;
+      font-size: 0.7rem;
+      color: #999;
+      z-index: 10;
+    }
+
+    /* ══════════════════════════════════════
+       BLOB SYSTEM — reusable decorative shapes
+       ══════════════════════════════════════ */
+
+    .blob-pink {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: #f30349;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .blob-teal-light {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      background: #1a9aaa;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .blob-teal-dark {
+      position: absolute;
+      width: 280px;
+      height: 280px;
+      background: #195969;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    .blob-teal-accent {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: #1a9aaa;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════
+       LAYOUT A — "Wat maakt Buzzmaster uniek?"
+       Pink top-right, two teal circles bottom-left
+       ══════════════════════════════════════ */
+    .layout-a .blob-pink       { top: -80px; right: -60px; }
+    .layout-a .blob-teal-light { bottom: -100px; left: -80px; }
+    .layout-a .blob-teal-dark  { bottom: -60px; left: 60px; }
+    .layout-a .content {
+      position: relative; z-index: 2;
+      padding: 60px 50px;
+    }
+
+    /* ══════════════════════════════════════
+       LAYOUT B — "Het probleem"
+       Pink top-left, teal accent right
+       ══════════════════════════════════════ */
+    .layout-b .blob-pink        { top: -80px; left: -80px; }
+    .layout-b .blob-teal-light  { bottom: -120px; right: -100px; }
+    .layout-b .blob-teal-dark   { bottom: -40px; right: 20px; }
+    .layout-b .blob-teal-accent { top: 40px; right: 60px; }
+    .layout-b .content {
+      position: relative; z-index: 2;
+      padding: 60px 50px;
+      display: flex;
+      gap: 60px;
+      align-items: flex-start;
+    }
+    .layout-b .photo-placeholder {
+      width: 240px;
+      height: 280px;
+      background: #ddd;
+      border-radius: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-size: 0.8rem;
+    }
+
+    /* ══════════════════════════════════════
+       LAYOUT C — "Hoe werkt het?" (pink bg)
+       Full pink left half, teal accent bottom
+       ══════════════════════════════════════ */
+    .layout-c {
+      background: linear-gradient(to right, #f30349 55%, #fff 55%);
+    }
+    .layout-c .blob-teal-light { bottom: -140px; left: -60px; opacity: 0.3; }
+    .layout-c .blob-teal-accent { bottom: 30px; right: 45%; }
+    .layout-c .content {
+      position: relative; z-index: 2;
+      padding: 50px;
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      height: 100%;
+    }
+    .layout-c .left-col {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .layout-c .photo-placeholder {
+      width: 260px;
+      height: 260px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.6);
+      font-size: 0.8rem;
+    }
+    .layout-c .right-col {
+      flex: 1;
+    }
+    .layout-c .right-col h2 { font-size: 2.2rem; }
+    .layout-c .right-col p { color: #555; }
+
+    /* ══════════════════════════════════════
+       LAYOUT D — Split: text left, screenshot right
+       Pink top-left corner, organic wave divider
+       ══════════════════════════════════════ */
+    .layout-d .blob-pink { top: -80px; left: -80px; width: 180px; height: 180px; }
+    .layout-d .content {
+      position: relative; z-index: 2;
+      padding: 50px;
+      display: flex;
+      gap: 40px;
+      align-items: center;
+      height: 100%;
+    }
+    .layout-d .left-col {
+      flex: 1;
+    }
+    .layout-d .right-col {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .layout-d .screenshot-placeholder {
+      width: 300px;
+      height: 200px;
+      background: #0a1628;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 0.75rem;
+    }
+    /* Wave divider between left and right */
+    .layout-d .wave-divider {
+      position: absolute;
+      top: 0;
+      left: 45%;
+      width: 200px;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════
+       LAYOUT E — Full-width with blobs
+       Like "Wat maakt Buzzmaster uniek?" with logo
+       ══════════════════════════════════════ */
+    .layout-e .blob-pink       { top: -60px; right: -40px; width: 240px; height: 240px; }
+    .layout-e .blob-teal-light { bottom: -140px; left: -100px; width: 380px; height: 380px; }
+    .layout-e .blob-teal-dark  { bottom: -80px; left: 100px; width: 300px; height: 300px; }
+    .layout-e .blob-teal-accent { top: 80px; right: 120px; width: 60px; height: 60px; }
+    .layout-e .content {
+      position: relative; z-index: 2;
+      padding: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 100%;
+    }
+    .layout-e .left-col { max-width: 380px; }
+    .layout-e .left-col h2 { font-size: 2.4rem; margin-bottom: 16px; }
+    .layout-e .left-col ul {
+      list-style: none;
+      padding: 0;
+      font-size: 0.85rem;
+      line-height: 1.8;
+      color: #333;
+    }
+    .layout-e .left-col ul li::before {
+      content: "•";
+      color: #195969;
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    .layout-e .logo-text {
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+    .layout-e .logo-text .buzz-dot {
+      display: inline-block;
+      width: 36px;
+      height: 28px;
+      background: #f30349;
+      border-radius: 50% 50% 50% 10%;
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LAYOUT A — "Wat maakt Buzzmaster uniek?" style -->
+  <div class="slide-frame layout-e">
+    <div class="blob-pink"></div>
+    <div class="blob-teal-light"></div>
+    <div class="blob-teal-dark"></div>
+    <div class="blob-teal-accent"></div>
+    <div class="content">
+      <div class="left-col">
+        <h2>Wat maakt<br>Buzzmaster uniek?</h2>
+        <p style="margin-bottom: 12px;">Buzzmaster is het eerste interactiesysteem waar AI alles aanstuurt. De AI analyseert continu:</p>
+        <ul>
+          <li>patronen in antwoorden</li>
+          <li>verschillen tussen groepen</li>
+          <li>terugkerende thema's</li>
+          <li>vragen die echt leven in de zaal</li>
+        </ul>
+      </div>
+      <div class="logo-text">
+        buzz<span class="buzz-dot"></span><br>master
+      </div>
+    </div>
+    <span class="label">Layout: "Wat maakt uniek"</span>
+  </div>
+
+  <!-- LAYOUT B — "Het probleem" style -->
+  <div class="slide-frame layout-b">
+    <div class="blob-pink"></div>
+    <div class="blob-teal-light"></div>
+    <div class="blob-teal-dark"></div>
+    <div class="blob-teal-accent"></div>
+    <div class="content">
+      <div class="photo-placeholder">[foto]</div>
+      <div>
+        <h2>Het probleem</h2>
+        <p>De meeste interactietools doen eigenlijk maar één ding. De interactie stopt vaak precies op het moment dat het interessant wordt.</p>
+      </div>
+    </div>
+    <span class="label">Layout: "Het probleem"</span>
+  </div>
+
+  <!-- LAYOUT C — "Hoe werkt het?" pink bg style -->
+  <div class="slide-frame layout-c">
+    <div class="blob-teal-light"></div>
+    <div class="blob-teal-accent"></div>
+    <div class="content">
+      <div class="left-col">
+        <div class="photo-placeholder">[foto]</div>
+      </div>
+      <div class="right-col">
+        <h2>Hoe werkt het?</h2>
+        <p>Buzzmaster loopt tijdens het hele evenement mee als een digitale sidekick. Van de eerste minuut tot de afsluiting.</p>
+      </div>
+    </div>
+    <span class="label">Layout: "Hoe werkt het"</span>
+  </div>
+
+  <!-- LAYOUT D — Split text/screenshot style -->
+  <div class="slide-frame layout-d">
+    <div class="blob-pink"></div>
+    <svg class="wave-divider" viewBox="0 0 200 405" preserveAspectRatio="none" fill="white">
+      <path d="M100,0 C60,80 140,160 80,240 C40,300 120,360 100,405 L200,405 L200,0 Z" />
+    </svg>
+    <div class="content">
+      <div class="left-col">
+        <h2>Opening</h2>
+        <p>Deelnemers loggen in op hun telefoon. Ze beantwoorden een paar korte vragen. Achter elkaar, a-synchroon.</p>
+      </div>
+      <div class="right-col">
+        <div class="screenshot-placeholder">[event screenshot]</div>
+      </div>
+    </div>
+    <span class="label">Layout: "Opening" split</span>
+  </div>
+
+</body>
+</html>

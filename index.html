@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BuzzMaster — AI-powered Audience Engagement</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="BuzzMaster — AI-powered Audience Engagement">
+  <meta property="og:description" content="De AI Sidekick van BuzzMaster. Een slimme co-host die live meedraait tijdens je event — polls, quizzen, analyses en meer.">
+  <meta property="og:image" content="https://buzzmaster-pres.web.app/logo-buzzmaster.png">
+  <meta property="og:url" content="https://buzzmaster-pres.web.app">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="nl_NL">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BuzzMaster — AI-powered Audience Engagement">
+  <meta name="twitter:description" content="De AI Sidekick van BuzzMaster. Een slimme co-host die live meedraait tijdens je event.">
+  <meta name="twitter:image" content="https://buzzmaster-pres.web.app/logo-buzzmaster.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --red-munsell: #F30849;
+      --turquoise: #43CBC1;
+      --midnight-green: #195969;
+      --metallic-seaweed: #00767F;
+      --cyclamen: #FF78AC;
+      --primary: #F30849;
+      --bg: #ffffff;
+      --bg-light: #f7f7f8;
+      --border: #e8e8ec;
+      --text: #1a1a1a;
+      --text-secondary: #5a5a6a;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: 'Avenir Next', 'Avenir', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .slides { position: relative; width: 100%; height: 100%; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 60px 100px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.45s ease;
+      background: var(--bg);
+      overflow: hidden;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; }
+
+    /* ── Shared ── */
+    .accent { color: var(--primary); }
+    .accent-teal { color: var(--turquoise); }
+    h1, h2, h3 { font-family: 'Montserrat', sans-serif; font-weight: 900; }
+    h2 {
+      font-size: 3.4rem; font-weight: 900; line-height: 1.08;
+      letter-spacing: -0.04em; margin-bottom: 20px;
+    }
+    .section-intro {
+      font-size: 1.15rem; color: var(--text-secondary); max-width: 620px;
+      text-align: center; margin-bottom: 48px; line-height: 1.65;
+    }
+
+    /* ── Slide counter ── */
+    .slide-counter {
+      position: fixed; bottom: 20px; right: 28px;
+      font-size: 0.78rem; color: var(--text-secondary);
+      font-weight: 500; z-index: 100;
+      font-variant-numeric: tabular-nums;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .slide-nav {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 12px; z-index: 100;
+    }
+    .slide-nav__btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(0,0,0,0.06); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: background 0.2s;
+      color: var(--text-secondary); font-size: 18px;
+    }
+    .slide-nav__btn:hover { background: rgba(0,0,0,0.12); }
+    .slide-hint {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      font-size: 0.8rem; color: var(--text-secondary);
+      font-family: 'Montserrat', sans-serif; z-index: 100;
+      opacity: 1; transition: opacity 1s ease;
+    }
+    .slide-hint.hidden { opacity: 0; pointer-events: none; }
+
+    /* ── Progress bar ── */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: linear-gradient(90deg, var(--red-munsell), var(--turquoise));
+      transition: width 0.4s ease; z-index: 100;
+    }
+
+    /* ═══════════════════════════════════════════════
+       ORGANIC SHAPES — Brandbook style (full-coverage)
+       ═══════════════════════════════════════════════ */
+    .blob-accent {
+      position: absolute;
+      border-radius: 50%;
+      z-index: 0;
+    }
+
+    /* ═══ SLIDE 1 — Hero ═══ */
+    .hero-slide {
+      background: var(--bg);
+      position: absolute;
+      inset: 0;
+      padding: 0 !important;
+      overflow: hidden;
+    }
+    /* Full-height organic S-curve — left side (brandbook style) */
+    .hero-wave-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    /* Midnight green accent — top right corner (brandbook p.5/23) */
+    .hero-shape-tr {
+      position: absolute;
+      top: 0; right: 0;
+      width: 200px; height: 160px;
+      background: var(--midnight-green);
+      border-radius: 0 0 0 100%;
+      z-index: 0;
+    }
+    /* Overlapping B-vormen (brandbook p.21/22 — uitsparingen uit de B) */
+    .hero-circles {
+      position: absolute;
+      z-index: 1;
+    }
+    /* D-shape / speech bubble vorm (brandbook p.21) */
+    .hero-circles .c1 {
+      position: absolute;
+      width: 120px; height: 120px;
+      border-radius: 20% 50% 50% 50%;
+      background: var(--red-munsell);
+    }
+    /* Cirkel accent */
+    .hero-circles .c2 {
+      position: absolute;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--cyclamen);
+    }
+    .hero-content {
+      position: absolute;
+      top: 0; right: 0;
+      width: 55%; height: 100%;
+      z-index: 2;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 80px 60px 40px;
+      gap: 4px;
+    }
+    .hero__logo {
+      max-width: 260px;
+      margin-bottom: 24px;
+    }
+    .hero__headline {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 4.2rem;
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+    .hero__sub {
+      margin-top: 28px;
+      font-size: 1.2rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      max-width: 480px;
+    }
+    .hero__features {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      margin-top: 48px;
+    }
+    .hero__tag {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: 50px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      border: 2px solid var(--border);
+      color: var(--text);
+      background: #fff;
+    }
+    .hero__cta {
+      margin-top: 40px;
+      display: inline-block;
+      padding: 16px 44px;
+      border-radius: 50px;
+      background: var(--red-munsell);
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 4px 24px rgba(243, 8, 73, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .hero__cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(243, 8, 73, 0.4);
+    }
+
+    /* ═══ SLIDE 2 — Nova intro ═══ */
+    .nova-intro-slide {
+      position: absolute;
+      inset: 0;
+      padding: 0 !important;
+      overflow: hidden;
+    }
+    /* Full-height organic S-curve — right side (mirrored, midnight green) */
+    .nova-wave-svg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    /* Red munsell accent — top left corner (brandbook p.9/20) */
+    .nova-shape-tl {
+      position: absolute;
+      top: 0; left: 0;
+      width: 180px; height: 140px;
+      background: var(--red-munsell);
+      border-radius: 0 0 100% 0;
+      z-index: 0;
+    }
+    /* Overlapping B-vormen on dark panel */
+    .nova-circles {
+      position: absolute;
+      z-index: 1;
+    }
+    /* D-shape / speech bubble vorm */
+    .nova-circles .c1 {
+      position: absolute;
+      width: 120px; height: 120px;
+      border-radius: 50% 20% 50% 50%;
+      background: var(--turquoise);
+    }
+    /* Cirkel accent */
+    .nova-circles .c2 {
+      position: absolute;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: var(--metallic-seaweed);
+    }
+    .nova-intro {
+      position: absolute;
+      top: 0; left: 0;
+      width: 58%; height: 100%;
+      z-index: 2;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding: 60px 60px 60px 100px;
+    }
+    .nova-intro h2 {
+      font-size: 3.2rem;
+      margin-bottom: 32px;
+    }
+    .nova-intro p {
+      font-size: 1.25rem;
+      line-height: 1.75;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    .nova-intro p:last-child { margin-bottom: 0; }
+    .nova-intro strong { color: var(--text); }
+    .nova-name { color: var(--primary); font-weight: 900; }
+    .ai-badge {
+      display: inline-block; font-size: 0.35em; font-weight: 800;
+      background: var(--primary); color: #fff;
+      padding: 2px 7px; border-radius: 5px;
+      vertical-align: top; margin-left: 2px;
+      letter-spacing: 0.05em; line-height: 1;
+      position: relative; top: -0.1em;
+    }
+    /* B-shape watermark on dark panel */
+    .nova-b-watermark {
+      position: absolute;
+      z-index: 1;
+      opacity: 0.1;
+    }
+
+    /* ═══ SLIDE 3 — Flow (step cards) ═══ */
+    .slide--scroll {
+      overflow-y: auto;
+      justify-content: flex-start;
+      padding-top: 80px;
+      padding-bottom: 80px;
+    }
+    .steps-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 18px; max-width: 960px; width: 100%;
+      position: relative; z-index: 2;
+    }
+    .step-card {
+      padding: 28px 30px;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .step-card:hover {
+      border-color: var(--turquoise);
+      box-shadow: 0 4px 24px rgba(67, 203, 193, 0.12);
+    }
+    .step-card__num {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--turquoise); margin-bottom: 10px;
+    }
+    .step-card__title {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.35rem; font-weight: 900; margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .step-card__desc {
+      font-size: 1.1rem; color: var(--text-secondary); line-height: 1.65;
+    }
+    .step-card--wide {
+      grid-column: 1 / -1;
+    }
+
+    /* ═══ SLIDE 4 — Setup ═══ */
+    .setup-content {
+      display: flex; gap: 64px;
+      max-width: 1100px; width: 100%;
+      align-items: flex-start;
+      position: relative; z-index: 2;
+    }
+    .setup-left { flex: 1; }
+    .setup-left p {
+      font-size: 1.3rem; line-height: 1.7; color: var(--text-secondary);
+      margin-bottom: 28px;
+    }
+    .setup-checks {
+      list-style: none; display: flex; flex-direction: column; gap: 18px;
+    }
+    .setup-checks li {
+      font-size: 1.25rem; line-height: 1.5;
+      color: var(--text); padding-left: 32px; position: relative;
+    }
+    .setup-checks li::before {
+      content: '\2713'; position: absolute; left: 0;
+      color: var(--turquoise); font-weight: 800;
+    }
+    .setup-right { flex: 1; }
+    .setup-stats {
+      display: flex; flex-direction: column; gap: 32px;
+    }
+    .setup-stat__val {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 4.5rem; font-weight: 900; line-height: 1;
+      letter-spacing: -0.03em; color: var(--text);
+    }
+    .setup-stat__label {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 0.85rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    /* ═══ SLIDES 5-14 — Light theme ═══ */
+    .slide--dark {
+      background: var(--bg) !important;
+      color: var(--text);
+    }
+    .fs-screen {
+      width: 100%; height: 100%;
+      position: absolute; inset: 0;
+      background: var(--bg);
+      display: flex; flex-direction: column;
+      font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+      overflow: hidden;
+    }
+    .fs-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 24px 40px; flex-shrink: 0;
+    }
+    .fs-header-label {
+      font-size: 14px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-secondary);
+    }
+    .fs-header-live {
+      font-size: 13px; font-weight: 700; color: #22c55e;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .fs-live-dot {
+      width: 10px; height: 10px; background: #22c55e;
+      border-radius: 50%; box-shadow: 0 0 12px rgba(34,197,94,0.6);
+    }
+    .fs-slide-label {
+      position: absolute; bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px; font-weight: 700; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.12em;
+    }
+
+    /* -- FS 1: NOVA avatar -- */
+    .fs-nova {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .fs-nova-ring {
+      width: 220px; height: 220px; border-radius: 50%;
+      border: 5px solid #f30349;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle, rgba(243,3,73,0.08), transparent);
+      box-shadow: 0 0 40px rgba(243,3,73,0.15);
+      position: relative;
+    }
+    .fs-nova-ring::before {
+      content: ''; position: absolute; inset: -14px;
+      border-radius: 50%; border: 1px solid rgba(243,3,73,0.15);
+    }
+    .fs-nova-n {
+      font-size: 80px; font-weight: 900; color: #f30349;
+      position: relative; z-index: 2;
+    }
+    .fs-nova-outer {
+      position: absolute; width: 250px; height: 250px;
+      border-radius: 50%; border: 1px solid rgba(243,3,73,0.1);
+      pointer-events: none;
+    }
+    .fs-nova-orbit {
+      position: absolute; width: 280px; height: 280px;
+      pointer-events: none;
+    }
+    .fs-nova-glow {
+      position: absolute; inset: -30px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(243,3,73,0.1), transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+    .fs-nova-scan {
+      position: absolute; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, transparent, #f30349, rgba(243,3,73,0.3), transparent);
+      box-shadow: 0 0 10px rgba(243,3,73,0.3);
+      opacity: 0; z-index: 1; pointer-events: none;
+    }
+    .fs-nova-status {
+      margin-top: 28px; font-size: 16px; font-weight: 600;
+      color: var(--text-secondary); letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .fs-nova-speech {
+      margin-top: 20px; max-width: 600px; text-align: center;
+      font-size: 22px; font-weight: 500; color: var(--text-secondary);
+      line-height: 1.6; font-style: italic;
+    }
+
+    /* -- FS 2: Poll bars -- */
+    .fs-poll {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 0 80px;
+    }
+    .fs-poll-badge {
+      display: inline-block; padding: 10px 28px; border-radius: 9999px;
+      background: #f30349; color: #fff;
+      font-size: 14px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 3px; margin-bottom: 20px;
+      box-shadow: 0 0 35px rgba(243,3,73,0.5);
+    }
+    .fs-poll-q {
+      font-size: 36px; font-weight: 700; color: var(--text);
+      text-align: center; margin-bottom: 48px; line-height: 1.25;
+    }
+    .fs-bars {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 40px; height: 320px; width: 80%; max-width: 900px;
+    }
+    .fs-bar-col {
+      display: flex; flex-direction: column; align-items: center; flex: 1;
+    }
+    .fs-bar-pct {
+      font-size: 32px; font-weight: 900; color: var(--text); margin-bottom: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+    .fs-bar-track {
+      width: 100%; max-width: 180px; border-radius: 12px 12px 0 0;
+    }
+    .fs-bar-lbl {
+      font-size: 16px; font-weight: 600; color: var(--text-secondary);
+      text-align: center; margin-top: 16px;
+    }
+    .fs-poll-votes {
+      font-size: 16px; color: var(--text-secondary); margin-top: 28px;
+      font-weight: 600;
+    }
+
+    /* -- FS 3: Open vraag -- */
+    .fs-open {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .fs-open-top {
+      text-align: center; padding: 12px 0 20px; flex-shrink: 0;
+    }
+    .fs-open-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 20px; border-radius: 40px;
+      background: rgba(243,3,73,0.08); border: 1px solid rgba(243,3,73,0.2);
+      font-size: 13px; font-weight: 700; color: #f30349;
+      text-transform: uppercase; letter-spacing: 0.12em;
+    }
+    .fs-open-dot {
+      width: 10px; height: 10px; border-radius: 50%; background: #f30349;
+      box-shadow: 0 0 10px rgba(243,3,73,0.6);
+    }
+    .fs-open-q {
+      font-size: 36px; font-weight: 700; color: var(--text);
+      text-align: center; margin-top: 14px; line-height: 1.25;
+    }
+    .fs-tiles {
+      flex: 1; display: flex; gap: 16px;
+      padding: 16px 40px 60px;
+      overflow: hidden;
+    }
+    .fs-tile-col {
+      flex: 1; display: flex; flex-direction: column; gap: 16px;
+    }
+    .fs-tile {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 26px 28px;
+    }
+    .fs-tile-text {
+      font-size: 24px; font-weight: 400; color: var(--text);
+      line-height: 1.45;
+    }
+    .fs-tile-name {
+      font-size: 15px; color: var(--text-secondary); font-weight: 500;
+      margin-top: 12px; padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .fs-tile-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* -- FS 4: Analyse -- */
+    .fs-analyse {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 0 80px;
+    }
+    .fs-insight-card {
+      width: 100%; max-width: 800px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 20px; padding: 44px 48px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .fs-insight-header {
+      display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+    }
+    .fs-insight-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: #f30349; display: flex; align-items: center;
+      justify-content: center; font-size: 22px; font-weight: 900; color: #fff;
+      box-shadow: 0 0 30px rgba(243,3,73,0.5); flex-shrink: 0;
+    }
+    .fs-insight-label {
+      font-size: 14px; font-weight: 700; color: #f30349;
+      text-transform: uppercase; letter-spacing: 3px;
+    }
+    .fs-insight-text {
+      font-size: 28px; font-weight: 500; color: var(--text); line-height: 1.65;
+    }
+    .fs-insight-text strong { color: #f30349; font-weight: 700; }
+
+    /* -- FS: Deep dive -- */
+    .fs-deepdive {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 0 60px; gap: 32px;
+    }
+    .fs-dd-badge {
+      display: inline-block; padding: 8px 24px; border-radius: 9999px;
+      background: #f30349;
+      font-size: 13px; font-weight: 700; color: #fff;
+      text-transform: uppercase; letter-spacing: 3px;
+    }
+    .fs-dd-title { font-size: 32px; font-weight: 700; color: var(--text); text-align: center; line-height: 1.25; }
+    .fs-dd-grid { display: flex; gap: 28px; width: 100%; max-width: 1000px; }
+    .fs-dd-col { flex: 1; }
+    .fs-dd-col-label {
+      font-size: 11px; font-weight: 700; color: var(--text-secondary);
+      text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 14px;
+    }
+    .fs-dd-card {
+      padding: 18px 22px; border-radius: 14px;
+      background: var(--bg-light);
+      border: 1px solid var(--border); margin-bottom: 10px;
+    }
+    .fs-dd-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .fs-dd-card-name { font-size: 17px; font-weight: 700; color: var(--text); }
+    .fs-dd-card-val { font-size: 22px; font-weight: 900; color: #f30349; }
+    .fs-dd-card-bar { height: 6px; border-radius: 3px; background: var(--border); overflow: hidden; }
+    .fs-dd-card-fill { height: 100%; border-radius: 3px; }
+    .fs-dd-card-detail { font-size: 13px; color: var(--text-secondary); margin-top: 6px; line-height: 1.4; }
+
+    /* -- FS: Image -- */
+    .fs-image {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 0 80px; gap: 24px;
+    }
+    .fs-image-frame {
+      width: 100%; max-width: 720px; aspect-ratio: 16/10;
+      border-radius: 20px; overflow: hidden;
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+      position: relative;
+      background: var(--bg-light);
+    }
+    .fs-image-canvas { width: 100%; height: 100%; object-fit: cover; }
+    .fs-image-prompt {
+      font-size: 16px; font-weight: 500; color: var(--text-secondary);
+      max-width: 600px; text-align: center; line-height: 1.6; font-style: italic;
+    }
+
+    /* -- FS: Fact-check -- */
+    .fs-factcheck {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 0 80px;
+    }
+    .fs-fc-card {
+      width: 100%; max-width: 800px;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 20px; padding: 44px 48px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .fs-fc-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+    .fs-fc-verdict {
+      display: inline-block; padding: 6px 18px; border-radius: 8px;
+      font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;
+    }
+    .fs-fc-verdict--true { background: rgba(34,197,94,0.1); color: #16a34a; border: 1px solid rgba(34,197,94,0.3); }
+    .fs-fc-verdict--false { background: rgba(243,3,73,0.08); color: #f30349; border: 1px solid rgba(243,3,73,0.2); }
+    .fs-fc-claim { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1.35; margin-bottom: 20px; }
+    .fs-fc-explanation { font-size: 18px; font-weight: 500; color: var(--text-secondary); line-height: 1.7; }
+    .fs-fc-explanation strong { color: #f30349; font-weight: 700; }
+    .fs-fc-source { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); font-weight: 600; }
+
+    /* -- FS: Quiz -- */
+    .fs-quiz-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 60px; }
+    .fs-quiz-card {
+      width: 100%; max-width: 960px; position: relative;
+      background: var(--bg);
+      border-radius: 20px; border: 2px solid var(--border);
+      padding: 56px 64px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .fs-quiz-timer { position: absolute; top: -48px; left: 50%; transform: translateX(-50%); width: 96px; height: 96px; }
+    .fs-quiz-timer svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .fs-quiz-timer-bg { fill: var(--bg); stroke: var(--border); stroke-width: 6; }
+    .fs-quiz-timer-fill { fill: none; stroke: #f30349; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 339; stroke-dashoffset: 85; filter: drop-shadow(0 0 8px rgba(243,3,73,0.3)); }
+    .fs-quiz-timer-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; }
+    .fs-quiz-header { display: flex; align-items: center; gap: 16px; margin-bottom: 28px; margin-top: 16px; }
+    .fs-quiz-icon { width: 52px; height: 52px; border-radius: 50%; background: #f30349; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 900; color: #fff; box-shadow: 0 0 40px rgba(243,3,73,0.6); flex-shrink: 0; }
+    .fs-quiz-meta-label { font-size: 13px; font-weight: 700; color: #f30349; text-transform: uppercase; letter-spacing: 3px; display: block; margin-bottom: 4px; }
+    .fs-quiz-meta-sub { font-size: 20px; font-weight: 600; color: var(--text); }
+    .fs-quiz-q { font-size: 40px; font-weight: 700; color: var(--text); line-height: 1.35; margin: 0 0 40px 0; }
+    .fs-quiz-answer { display: inline-block; padding: 16px 40px; background: rgba(243,3,73,0.08); border: 2px solid rgba(243,3,73,0.3); border-radius: 16px; }
+    .fs-quiz-answer-text { font-size: 36px; font-weight: 800; color: #f30349; }
+    .fs-quiz-bg { margin-top: 28px; font-size: 24px; font-weight: 500; color: var(--text); line-height: 1.6; font-style: italic; }
+
+    /* ═══ Phones slide ═══ */
+    .fs-phones { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 40px; gap: 36px; }
+    .fs-phones-row { display: flex; gap: 56px; align-items: center; justify-content: center; }
+    .fs-phone-col { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+    .fs-phone-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 4px; color: var(--text-secondary); }
+    .fs-phone { width: 240px; height: 490px; background: var(--bg); border-radius: 40px; border: 3px solid var(--border); box-shadow: 0 8px 40px rgba(0,0,0,0.08); overflow: hidden; position: relative; display: flex; flex-direction: column; }
+    .fs-phone::before { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 72px; height: 22px; background: var(--text); border-radius: 12px; z-index: 10; }
+    .fs-phone-screen { flex: 1; margin: 4px; border-radius: 36px; overflow: hidden; display: flex; flex-direction: column; background: var(--bg-light); }
+    .fs-phone-header { padding: 36px 16px 10px; text-align: center; font-size: 9px; font-weight: 800; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid var(--border); }
+    .fs-phone-body { display: flex; flex-direction: column; padding: 14px 14px 18px; gap: 10px; }
+    .fs-phone-q { font-size: 13px; font-weight: 800; color: var(--text); text-align: center; line-height: 1.4; }
+    .fs-phone-options { display: flex; flex-direction: column; gap: 7px; margin-top: 6px; }
+    .fs-phone-opt { padding: 13px 14px; border-radius: 12px; background: var(--bg); border: 1.5px solid var(--border); font-size: 12px; font-weight: 700; color: var(--text-secondary); }
+    .fs-phone-opt--selected { background: #f30349; color: #fff; border-color: #f30349; box-shadow: 0 4px 20px rgba(243,3,73,0.2); }
+    .fs-phone-input-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .fs-phone-textarea { padding: 12px; border-radius: 12px; background: var(--bg); border: 1.5px solid var(--border); font-size: 12px; color: var(--text-secondary); line-height: 1.6; font-family: inherit; }
+    .fs-phone-send { align-self: center; padding: 10px 24px; border-radius: 9999px; background: #f30349; color: #fff; font-size: 11px; font-weight: 800; border: none; text-transform: uppercase; letter-spacing: 1.5px; box-shadow: 0 4px 20px rgba(243,3,73,0.2); }
+    .fs-phone-quiz-timer { width: 40px; height: 40px; margin: 0 auto 6px; border-radius: 50%; border: 3px solid #f30349; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: #f30349; box-shadow: 0 0 10px rgba(243,3,73,0.15); }
+    .fs-phone-quiz-opts { display: flex; flex-direction: column; gap: 7px; margin-top: 8px; }
+    .fs-phone-quiz-opt { padding: 12px 14px; border-radius: 10px; background: var(--bg); border: 1.5px solid var(--border); font-size: 12px; font-weight: 700; color: var(--text-secondary); text-align: left; }
+    .fs-phone-quiz-opt--selected { background: #f30349; color: #fff; border-color: #f30349; box-shadow: 0 4px 20px rgba(243,3,73,0.2); }
+
+    /* ═══ SLIDE 15 — CTA ═══ */
+    .cta-slide { }
+    .cta-box { text-align: center; position: relative; z-index: 2; }
+    .cta-box .logo { max-width: 180px; margin-bottom: 36px; }
+    .cta-btn {
+      display: inline-block; margin-top: 28px;
+      padding: 18px 52px; border-radius: 50px;
+      background: var(--primary); color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+      text-decoration: none; letter-spacing: -0.01em;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(243, 8, 73, 0.3);
+    }
+    .cta-btn:hover {
+      background: #d50240;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(243, 8, 73, 0.4);
+    }
+    .contact-info {
+      margin-top: 24px; color: var(--text-secondary);
+      font-size: 0.95rem; line-height: 2;
+    }
+
+    /* ═══ Organic wave SVG backgrounds ═══ */
+    .wave-svg {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ─── B-shape badge (speech bubble form from logo) ─── */
+    .b-shape {
+      position: absolute;
+      z-index: 0;
+    }
+
+    /* ═══ Preview cards — mini versions of original slides ═══ */
+    .preview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      max-width: 1300px;
+      width: 100%;
+      position: relative;
+      z-index: 2;
+    }
+    .preview-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #d1d1d6;
+      background: var(--bg);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06);
+      position: relative;
+      z-index: 2;
+    }
+    .preview-card__label {
+      font-family: -apple-system, 'SF Pro Text', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0;
+      color: #3c3c43;
+      padding: 0;
+      background: #fff;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid #e8e8ec;
+    }
+    .preview-card__label::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: #ff5f57;
+      box-shadow: 18px 0 0 #febc2e, 36px 0 0 #28c840;
+    }
+    .preview-card__screen {
+      aspect-ratio: 16 / 9;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      font-family: 'Avenir Next', 'Avenir', system-ui, sans-serif;
+      overflow: hidden;
+      color: var(--text);
+      position: relative;
+    }
+
+    /* ═══ Phone mockups ═══ */
+    .phone-row {
+      display: flex;
+      gap: clamp(30px, 5vw, 80px);
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 2;
+    }
+    .phone-mockup {
+      height: clamp(320px, 55vh, 520px);
+      aspect-ratio: 9/19.5;
+      background: #ffffff;
+      border-radius: clamp(22px, 3vw, 40px);
+      border: 3px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08), 0 0 0 1px var(--border);
+      position: relative;
+    }
+    .phone-mockup__header {
+      padding: clamp(8px, 1vw, 12px) clamp(14px, 1.5vw, 20px);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-light);
+    }
+    .phone-mockup__header-dot {
+      width: clamp(6px, 0.7vw, 8px);
+      height: clamp(6px, 0.7vw, 8px);
+      border-radius: 50%;
+      background: var(--red-munsell);
+    }
+    .phone-mockup__header-label {
+      font-size: clamp(8px, 0.8vw, 10px);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.5px;
+    }
+    .phone-mockup__body {
+      padding: clamp(14px, 1.5vw, 20px);
+      padding-top: clamp(14px, 1.5vw, 18px);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(6px, 0.7vw, 10px);
+      justify-content: flex-start;
+    }
+
+    /* ═══ NOVA speaking indicator ═══ */
+    .nova-speaking {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 14px;
+      gap: 8px;
+    }
+    .nova-speaking__n {
+      font-size: 11px;
+      font-weight: 900;
+      color: #f30349;
+      flex-shrink: 0;
+    }
+    .nova-speaking__line {
+      width: 80px;
+      height: 2px;
+      background: var(--border);
+      border-radius: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    .nova-speaking__line::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -30px;
+      width: 30px;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #f30349, transparent);
+      border-radius: 1px;
+      animation: nova-line 1.8s ease-in-out infinite;
+    }
+    @keyframes nova-line {
+      0% { left: -30px; }
+      50% { left: 80px; }
+      100% { left: -30px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<div class="slides" id="slides">
+
+  <!-- ═══ SLIDE 1 — Titel ═══ -->
+  <div class="slide hero-slide active" data-slide="1">
+    <!-- Organic S-curve — turquoise left side (brandbook p.5/17/23/26) -->
+    <svg class="hero-wave-svg" style="position:absolute;top:-101.938px;left:-94.8672px;width:1501px;height:995.148px;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+      <path d="M0,0 L0,1080 L720,1080 C780,1080 840,1020 860,940 C920,720 800,580 780,440 C760,300 840,140 900,60 C920,30 880,0 840,0 Z" fill="#43CBC1"/>
+    </svg>
+    <!-- Midnight green corner — top right -->
+    <div class="hero-shape-tr" style="position:absolute;top:-3.047px;left:1233.52px;width:344.133px;height:282.758px;"></div>
+    <!-- Accent shapes -->
+    <div style="position:absolute;width:120px;height:120px;border-radius:50%;background:rgb(255,120,172);left:686px;top:197.781px;z-index:1;"></div>
+    <div style="position:absolute;width:120px;height:120px;border-radius:20% 50% 50%;background:rgb(67,203,193);left:688.277px;top:658.898px;z-index:1;"></div>
+    <!-- Content — right side, full height -->
+    <div class="hero-content">
+      <img class="hero__logo" src="logo-buzzmaster.png" alt="BuzzMaster">
+      <h1 class="hero__headline">
+        AI-powered<br>publieks <span class="accent">interactie</span>
+      </h1>
+      <p class="hero__sub">
+        Een AI die meeluistert, meedenkt en je publiek activeert. Live, op het podium, in realtime.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2 — Nova intro ═══ -->
+  <div class="slide nova-intro-slide" data-slide="2">
+    <!-- Organic S-curve — midnight green right side (mirrored, brandbook p.5/23) -->
+    <svg class="nova-wave-svg" style="position:absolute;top:-51.0625px;left:26.4766px;width:1501px;height:1020.75px;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+      <path d="M1920,0 L1920,1080 L1200,1080 C1140,1080 1080,1020 1060,940 C1000,720 1120,580 1140,440 C1160,300 1080,140 1020,60 C1000,30 1040,0 1080,0 Z" fill="#195969"/>
+    </svg>
+    <!-- Red munsell corner — top left -->
+    <div class="nova-shape-tl" style="position:absolute;top:0;left:0;width:263px;height:192.32px;"></div>
+    <!-- Content — left side, full height -->
+    <div class="nova-intro">
+      <h2>Van interactie naar <span class="accent">intelligentie</span></h2>
+      <p>Maak kennis met de <span class="nova-name">AI Sidekick</span> van BuzzMaster. Een slimme co-host die live meedraait tijdens je event. Ze luistert mee, gaat in gesprek met de spreker en activeert het publiek op precies het juiste moment.</p>
+      <p>Ze voert live een dialoog met de host, stelt verhelderende vragen, doet fact-checks en brengt eigen inzichten in. Tegelijkertijd schakelt ze zelfstandig tussen polls, open vragen en quizzen. Als het publiek antwoordt, analyseert ze alle resultaten direct — thema's, sentiment, uitschieters — en presenteert de kern terug aan de zaal.</p>
+      <p><strong>Voor de dagvoorzitter of spreker werkt het systeem heel intuïtief — je kunt er gewoon mee praten. Weinig extra voorbereiding nodig. Achter de schermen sturen we altijd technische ondersteuning mee, om te assisteren waar nodig.</strong></p>
+    </div>
+    <!-- Video — right side, in dark area, Safari frame -->
+    <div style="position:absolute;top:50%;right:0;width:42%;transform:translateY(-50%);z-index:2;padding:40px 60px 40px 0;">
+      <div style="border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.15);box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;font-size:0.72rem;font-weight:600;color:#3c3c43;background:#fff;height:36px;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid #e8e8ec;">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);display:flex;gap:6px;">
+            <span style="width:12px;height:12px;border-radius:50%;background:#ff5f57;display:inline-block;"></span>
+            <span style="width:12px;height:12px;border-radius:50%;background:#febc2e;display:inline-block;"></span>
+            <span style="width:12px;height:12px;border-radius:50%;background:#28c840;display:inline-block;"></span>
+          </span>
+          AI Sidekick in actie
+        </div>
+        <div style="padding:125% 0 0 0;position:relative;">
+          <iframe src="https://player.vimeo.com/video/1172177424?badge=0&autopause=0&player_id=0&app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Buzzmaster AI Sidekick"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://player.vimeo.com/api/player.js"></script>
+
+  <!-- ═══ SLIDE 3 — Hoe het werkt ═══ -->
+  <div class="slide slide--scroll" data-slide="3">
+    <!-- Decorative shapes -->
+    <div class="wave-svg" style="position:absolute;top:-159.652px;left:1130.72px;width:525.344px;height:525.344px;background:rgb(243,8,73);border-radius:50%;"></div>
+    <div class="blob-accent" style="position:absolute;top:59.879px;left:40px;width:100px;height:100px;background:rgb(0,118,127);opacity:1;border-radius:20% 50% 50%;"></div>
+    <div class="blob-accent" style="position:absolute;top:793px;left:60px;width:60px;height:60px;background:var(--red-munsell);opacity:0.06;"></div>
+
+    <h2 style="position:relative;z-index:2;">Eén loop, volledig <span class="accent-teal">hands-free</span></h2>
+    <p class="section-intro" style="position:relative;z-index:2;">
+      Eén doorlopend proces van conversaties, vragen, stemmen en analyseren. Volledig hands-free.
+    </p>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-card__num">01 — In gesprek</div>
+        <div class="step-card__title">Live dialoog met de spreker</div>
+        <div class="step-card__desc">De AI Sidekick voert een echt gesprek met de host op het podium. Ze reageert op wat er gezegd wordt, stelt verhelderende vragen, doet live fact-checks en brengt eigen inzichten in op basis van de context.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num">02 — Publiek activeren</div>
+        <div class="step-card__title">Polls, open vragen en quizzen</div>
+        <div class="step-card__desc">Ze bedenkt vragen die aansluiten bij het onderwerp en stuurt ze naar het podium en de telefoons van alle deelnemers. Ze kiest zelfstandig het juiste format.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num">03 — Stemmen</div>
+        <div class="step-card__title">Deelnemers antwoorden via hun telefoon</div>
+        <div class="step-card__desc">QR-code scannen en direct stemmen of typen. Geen app-download, geen account aanmaken. Resultaten verschijnen realtime op het podium.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-card__num">04 — Analyseren</div>
+        <div class="step-card__title">Honderden antwoorden direct verwerkt</div>
+        <div class="step-card__desc">Ze leest alle antwoorden tegelijk, clustert ze op thema, detecteert sentiment en uitschieters, en presenteert de kern terug aan de zaal en de spreker.</div>
+      </div>
+      <div class="step-card step-card--wide">
+        <div class="step-card__num">05 — Meeluisteren</div>
+        <div class="step-card__title">Altijd paraat</div>
+        <div class="step-card__desc">De spreker pikt de inzichten op en gaat verder. Ze blijft meeluisteren en kan op elk moment opnieuw het publiek activeren of het gesprek een andere kant op sturen.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4 — Setup ═══ -->
+  <div class="slide" data-slide="4">
+    <!-- Decorative shapes -->
+    <svg class="wave-svg" style="bottom:0;left:0;width:45%;height:auto;" viewBox="0 0 600 400" preserveAspectRatio="xMinYMax meet">
+      <path d="M0,400 L0,200 C80,150 200,120 300,180 C400,240 500,300 600,260 L600,400 Z" fill="var(--turquoise)" opacity="0.06"/>
+    </svg>
+    <div class="blob-accent" style="top:40px;right:60px;width:180px;height:180px;background:var(--midnight-green);opacity:0.05;border-radius:50%;"></div>
+    <div class="blob-accent" style="top:80px;right:140px;width:80px;height:80px;background:var(--red-munsell);opacity:0.06;border-radius:50%;"></div>
+
+    <h2 style="position:relative;z-index:2;">Altijd <span class="accent-teal">maatwerk</span></h2>
+    <p class="section-intro" style="position:relative;z-index:2;">
+      Geen standaard pakket. Geen sjabloon dat je zelf invult. Wij denken mee over jouw event, jouw publiek en jouw doelen.
+    </p>
+    <div class="setup-content">
+      <div class="setup-left">
+        <ul class="setup-checks">
+          <li>Persoonlijk advies over hoe je BuzzMaster inzet</li>
+          <li>Samen het programma doordenken op interactiemomenten</li>
+          <li>Energie in de zaal creëren die past bij jouw thema</li>
+          <li>Van voorbereiding tot live: wij staan naast je</li>
+        </ul>
+      </div>
+      <div class="setup-right">
+        <div class="setup-stats">
+          <div class="setup-stat">
+            <div class="setup-stat__val">1000+</div>
+            <div class="setup-stat__label">Gelijktijdige connecties</div>
+          </div>
+          <div class="setup-stat">
+            <div class="setup-stat__val">📱</div>
+            <div class="setup-stat__label">Werkt op iedere smartphone</div>
+          </div>
+          <div class="setup-stat">
+            <div class="setup-stat__val"><span style="filter:grayscale(1) brightness(0)">⚡</span></div>
+            <div class="setup-stat__label">Setup op locatie in &lt; 10 min</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5 — NOVA in actie (1/3) ═══ -->
+  <div class="slide slide--scroll" data-slide="5">
+    <div class="blob-accent" style="position:absolute;top:-56px;left:1265.79px;width:318.211px;height:352px;background:rgb(255,120,172);opacity:1;"></div>
+    <div class="blob-accent" style="position:absolute;top:713px;left:40px;width:120px;height:120px;background:var(--red-munsell);opacity:0.06;"></div>
+
+    <h2 style="position:relative;z-index:2;font-size:2.4rem;margin-bottom:8px;">De AI Sidekick <span class="accent">in actie</span></h2>
+    <p class="section-intro" style="position:relative;z-index:2;margin-bottom:24px;font-size:1rem;">Zo ziet een sessie eruit — van eerste woord tot laatste inzicht.</p>
+
+    <div class="preview-grid">
+      <!-- Card 1: Live dialoog -->
+      <div class="preview-card">
+        <div class="preview-card__label">Meeluisteren met de spreker</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:24px;">
+          <div style="width:100px;height:100px;border-radius:50%;border:4px solid #f30349;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(243,3,73,0.08),transparent);margin-bottom:14px;">
+            <span style="font-size:42px;font-weight:900;color:#f30349;">B</span>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:10px;">Luistert mee...</div>
+          <div style="font-size:14px;color:var(--text-secondary);text-align:center;max-width:340px;line-height:1.5;font-style:italic;">"Interessant punt over de energietransitie. Zullen we even peilen wat de zaal ervan vindt?"</div>
+          <div class="nova-speaking"><div class="nova-speaking__n">B</div><div class="nova-speaking__line"></div></div>
+        </div>
+      </div>
+
+      <!-- Card 2: Fact-check -->
+      <div class="preview-card">
+        <div class="preview-card__label">Claim checken</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:24px;">
+          <div style="width:100%;max-width:420px;background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:24px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:#f30349;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;">B</div>
+              <span style="font-size:11px;font-weight:700;color:#f30349;text-transform:uppercase;letter-spacing:2px;">AI Fact-check</span>
+            </div>
+            <div style="font-size:15px;font-weight:700;margin-bottom:10px;line-height:1.35;color:var(--text);">"De energietransitie kost Nederland 200 miljard euro"</div>
+            <span style="display:inline-block;padding:4px 12px;border-radius:6px;background:rgba(243,3,73,0.1);color:#f30349;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:1px;border:1px solid rgba(243,3,73,0.3);margin-bottom:12px;">Gedeeltelijk onjuist</span>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.5;">PBL schat kosten op <strong style="color:#f30349;">102-164 miljard</strong> tot 2030. Het genoemde bedrag is niet onderbouwd.</div>
+            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:10px;color:var(--text-secondary);font-weight:600;">Bron: PBL Klimaat- en Energieverkenning 2025</div>
+          </div>
+          <div style="margin-top:16px;font-size:14px;color:var(--text-secondary);text-align:center;font-style:italic;line-height:1.5;">"Zal ik een poll starten om te peilen wat de zaal ervan vindt?"</div>
+          <div class="nova-speaking"><div class="nova-speaking__n">B</div><div class="nova-speaking__line"></div></div>
+        </div>
+      </div>
+
+      <!-- Card 3: Live poll -->
+      <div class="preview-card">
+        <div class="preview-card__label">De zaal peilen</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:24px;">
+          <div style="font-size:18px;font-weight:700;text-align:center;margin-bottom:20px;line-height:1.3;color:var(--text);">Wat is de grootste uitdaging<br>bij de energietransitie?</div>
+          <div style="display:flex;align-items:flex-end;gap:20px;height:140px;width:80%;">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <span style="font-size:18px;font-weight:900;margin-bottom:6px;color:var(--text);">38%</span>
+              <div style="width:100%;height:100px;background:linear-gradient(to top,#f30349,#ff3366);border-radius:8px 8px 0 0;"></div>
+              <span style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:8px;">Kosten</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <span style="font-size:18px;font-weight:900;margin-bottom:6px;color:var(--text);">27%</span>
+              <div style="width:100%;height:70px;background:linear-gradient(to top,#9333ea,#a855f7);border-radius:8px 8px 0 0;"></div>
+              <span style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:8px;">Draagvlak</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <span style="font-size:18px;font-weight:900;margin-bottom:6px;color:var(--text);">22%</span>
+              <div style="width:100%;height:56px;background:linear-gradient(to top,#f59e0b,#fbbf24);border-radius:8px 8px 0 0;"></div>
+              <span style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:8px;">Infra</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+              <span style="font-size:18px;font-weight:900;margin-bottom:6px;color:var(--text);">13%</span>
+              <div style="width:100%;height:34px;background:linear-gradient(to top,#10b981,#34d399);border-radius:8px 8px 0 0;"></div>
+              <span style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-top:8px;">Regels</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:12px;font-weight:600;">247 stemmen</div>
+        </div>
+      </div>
+
+      <!-- Card 4: Analyse poll -->
+      <div class="preview-card">
+        <div class="preview-card__label">Stemmen analyseren</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:28px;">
+          <div style="width:100%;max-width:460px;background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:24px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:#f30349;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;">B</div>
+              <span style="font-size:13px;font-weight:700;color:#f30349;text-transform:uppercase;letter-spacing:2px;">AI Samenvatting</span>
+            </div>
+            <div style="font-size:16px;color:var(--text);line-height:1.7;"><strong style="color:#f30349;">Kosten</strong> is dominant — vooral Randstad (52%). Noord &amp; Oost: meer focus op <strong style="color:#f30349;">draagvlak</strong> (38%). <strong style="color:#f30349;">Regelgeving</strong> scoort laagst overall, maar top-2 voor bestuurders.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 6 — En dan verder (2/3) ═══ -->
+  <div class="slide slide--scroll" data-slide="6">
+    <div class="blob-accent" style="bottom:40px;left:60px;width:140px;height:140px;background:var(--red-munsell);opacity:0.06;"></div>
+    <div class="blob-accent" style="top:50px;right:40px;width:130px;height:130px;background:var(--turquoise);opacity:0.07;"></div>
+
+    <h2 style="position:relative;z-index:2;font-size:2.4rem;margin-bottom:8px;">Analyse en <span class="accent">inzicht</span></h2>
+    <p class="section-intro" style="position:relative;z-index:2;margin-bottom:24px;font-size:1rem;">Realtime AI-analyse, visualisatie en quizzen.</p>
+
+    <div class="preview-grid">
+      <!-- Card 5: Open vragen -->
+      <div class="preview-card">
+        <div class="preview-card__label">Open vraag stellen</div>
+        <div class="preview-card__screen" style="padding:20px;">
+          <div style="text-align:center;margin-bottom:12px;">
+            <div style="font-size:18px;font-weight:700;color:var(--text);">Wat zou jij als eerste veranderen<br>in je organisatie?</div>
+          </div>
+          <div style="display:flex;gap:10px;flex:1;overflow:hidden;">
+            <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+                <div style="font-size:13px;color:var(--text);line-height:1.4;">Meer ruimte voor experimenten zonder dat alles een business case nodig heeft</div>
+                <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:#f30349;"></span> Sarah</div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+                <div style="font-size:13px;color:var(--text);line-height:1.4;">Minder vergaderen, meer doen</div>
+                <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;"></span> Lisa</div>
+              </div>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+                <div style="font-size:13px;color:var(--text);line-height:1.4;">Leiderschap dat écht luistert naar de werkvloer</div>
+                <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;"></span> Mark</div>
+              </div>
+              <div style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px 16px;">
+                <div style="font-size:13px;color:var(--text);line-height:1.4;">De klant weer centraal, niet de KPI's</div>
+                <div style="font-size:11px;color:var(--text-secondary);margin-top:6px;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:#f30349;"></span> Eva</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 6: Analyse open vragen -->
+      <div class="preview-card">
+        <div class="preview-card__label">Antwoorden analyseren</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:28px;">
+          <div style="width:100%;max-width:460px;background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:24px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+              <div style="width:40px;height:40px;border-radius:50%;background:#f30349;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;">B</div>
+              <span style="font-size:13px;font-weight:700;color:#f30349;text-transform:uppercase;letter-spacing:2px;">AI Analyse</span>
+            </div>
+            <div style="font-size:16px;color:var(--text);line-height:1.7;">Uit 183 antwoorden komen vijf thema's: <strong style="color:#f30349;">Experimenteerruimte</strong> (31%), <strong style="color:#f30349;">Leiderschap</strong> (24%), <strong style="color:#f30349;">Klantfocus</strong> (19%), <strong style="color:#f30349;">Vergadercultuur</strong> (15%) en <strong style="color:#f30349;">Autonomie</strong> (11%). Opvallend: jongere deelnemers noemen vaker 'experimenteerruimte'.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 7: Visualisatie -->
+      <div class="preview-card">
+        <div class="preview-card__label">Inzichten visualiseren</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:24px;">
+          <div style="font-size:11px;font-weight:700;color:var(--turquoise);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;">183 open antwoorden geanalyseerd</div>
+          <div style="width:80%;aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:2px solid var(--border);box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+            <img src="generated-image.jpg" alt="Gegenereerde visualisatie" style="width:100%;height:100%;object-fit:cover;">
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);text-align:center;margin-top:10px;max-width:360px;line-height:1.5;font-style:italic;">"Visualiseer de vijf thema's uit de open vragen, gewogen op frequentie"</div>
+        </div>
+      </div>
+
+      <!-- Card 8: Quiz vraag met timer -->
+      <div class="preview-card">
+        <div class="preview-card__label">Het publiek quizzen</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:24px;">
+          <div style="width:100%;max-width:420px;background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:28px;position:relative;">
+            <!-- Timer cirkel -->
+            <div style="position:absolute;top:-28px;left:50%;transform:translateX(-50%);width:56px;height:56px;">
+              <svg style="width:100%;height:100%;transform:rotate(-90deg);" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="54" fill="var(--bg)" stroke="var(--border)" stroke-width="6"/>
+                <circle cx="60" cy="60" r="54" fill="none" stroke="#f30349" stroke-width="6" stroke-linecap="round" stroke-dasharray="339" stroke-dashoffset="85" style="filter:drop-shadow(0 0 6px rgba(243,3,73,0.3));"/>
+              </svg>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:var(--text);">18</div>
+            </div>
+            <!-- Header -->
+            <div style="display:flex;align-items:center;gap:10px;margin:12px 0 14px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:#f30349;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;">?</div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:#f30349;text-transform:uppercase;letter-spacing:2px;">AI Quiz</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text);">Vraag 1 van 3</div>
+              </div>
+            </div>
+            <div style="font-size:18px;font-weight:700;line-height:1.3;color:var(--text);">Hoeveel organisaties hebben hun duurzaamheidsdoelen daadwerkelijk gehaald?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 7 — Quiz + Samenvatting (3/3) ═══ -->
+  <div class="slide" data-slide="7">
+    <div class="blob-accent" style="position:absolute;top:50px;left:1313px;width:150px;height:150px;background:rgb(67,203,193);opacity:0.67;"></div>
+    <div class="blob-accent" style="position:absolute;top:723px;left:80px;width:120px;height:120px;background:var(--red-munsell);opacity:0.06;"></div>
+    <div style="position:absolute;width:120px;height:120px;border-radius:50%;background:rgb(243,8,73);left:177.746px;top:77.809px;z-index:1;"></div>
+
+    <h2 style="position:relative;z-index:2;font-size:2.4rem;margin-bottom:8px;">Quiz en <span class="accent">samenvatting</span></h2>
+    <p class="section-intro" style="position:relative;z-index:2;margin-bottom:24px;font-size:1rem;">De quiz-uitslag en het sessie-rapport.</p>
+
+    <div class="preview-grid">
+      <!-- Card 9: Quiz antwoord met context -->
+      <div class="preview-card">
+        <div class="preview-card__label">Antwoord onthullen</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:24px;">
+          <div style="width:100%;max-width:420px;background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:24px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+              <div style="width:32px;height:32px;border-radius:50%;background:#f30349;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#fff;">?</div>
+              <div>
+                <div style="font-size:10px;font-weight:700;color:#f30349;text-transform:uppercase;letter-spacing:2px;">AI Quiz</div>
+                <div style="font-size:12px;font-weight:600;color:var(--text);">Antwoord</div>
+              </div>
+            </div>
+            <div style="font-size:16px;font-weight:700;line-height:1.3;margin-bottom:14px;color:var(--text);">Hoeveel organisaties hebben hun duurzaamheidsdoelen daadwerkelijk gehaald?</div>
+            <div style="display:inline-block;padding:10px 24px;background:rgba(243,3,73,0.08);border:2px solid rgba(243,3,73,0.3);border-radius:12px;margin-bottom:14px;">
+              <span style="font-size:28px;font-weight:800;color:#f30349;">1 op de 4</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;font-style:italic;">Uit onderzoek van Deloitte blijkt dat slechts 25% van organisaties hun eigen klimaatdoelen haalt — vaak door gebrek aan draagvlak, niet aan budget.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 10: Samenvatting / Sessie rapport -->
+      <div class="preview-card">
+        <div class="preview-card__label">Sessie samenvatten</div>
+        <div class="preview-card__screen" style="align-items:center;justify-content:center;padding:24px;">
+          <div style="width:100%;max-width:400px;">
+            <div style="text-align:center;margin-bottom:18px;">
+              <div style="font-size:48px;font-weight:900;color:#f30349;line-height:1;">247</div>
+              <div style="font-size:14px;font-weight:700;color:var(--text);margin-top:4px;">deelnemers</div>
+            </div>
+            <div style="display:flex;gap:12px;margin-bottom:16px;">
+              <div style="flex:1;background:var(--bg-light);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:22px;font-weight:900;color:var(--turquoise);">89%</div>
+                <div style="font-size:10px;font-weight:600;color:var(--text-secondary);margin-top:4px;">Respons</div>
+              </div>
+              <div style="flex:1;background:var(--bg-light);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:22px;font-weight:900;color:var(--turquoise);">4.2s</div>
+                <div style="font-size:10px;font-weight:600;color:var(--text-secondary);margin-top:4px;">Reactietijd</div>
+              </div>
+              <div style="flex:1;background:var(--bg-light);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-size:22px;font-weight:900;color:var(--turquoise);">5</div>
+                <div style="font-size:10px;font-weight:600;color:var(--text-secondary);margin-top:4px;">Interacties</div>
+              </div>
+            </div>
+            <div style="height:6px;background:var(--bg-light);border-radius:3px;overflow:hidden;">
+              <div style="width:79%;height:100%;background:linear-gradient(90deg,#f30349,var(--turquoise));border-radius:3px;"></div>
+            </div>
+            <div style="font-size:10px;color:var(--text-secondary);margin-top:6px;">Engagement score: 79%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 8 — Deelnemers / Telefoons ═══ -->
+  <div class="slide" data-slide="8">
+    <div class="blob-accent" style="top:60px;left:80px;width:180px;height:180px;background:var(--turquoise);opacity:0.07;"></div>
+    <div class="blob-accent" style="bottom:60px;right:100px;width:120px;height:120px;background:var(--red-munsell);opacity:0.06;"></div>
+
+    <h2 style="position:relative;z-index:2;">Deelnemen via je <span class="accent">telefoon</span></h2>
+    <p class="section-intro" style="position:relative;z-index:2;">Deelnemers doen mee via hun eigen telefoon — geen app nodig.</p>
+
+    <div class="phone-row">
+      <!-- Phone 1: Poll -->
+      <div class="phone-mockup">
+        <div class="phone-mockup__header">
+          <div class="phone-mockup__header-dot"></div>
+          <div class="phone-mockup__header-label">BuzzMaster</div>
+        </div>
+        <div class="phone-mockup__body">
+          <div style="font-size:clamp(12px,1.3vw,16px);font-weight:600;color:var(--text);line-height:1.3;margin-bottom:4px;">Wat is de grootste uitdaging bij de energietransitie?</div>
+          <div style="font-size:clamp(9px,0.8vw,11px);color:var(--text-secondary);margin-bottom:8px;">Kies een antwoord</div>
+          <div style="padding:clamp(8px,1vw,12px);border-radius:10px;background:var(--red-munsell);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:#fff;">Kosten</div>
+          <div style="padding:clamp(8px,1vw,12px);border-radius:10px;background:var(--bg-light);border:1.5px solid var(--border);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:var(--text);">Draagvlak</div>
+          <div style="padding:clamp(8px,1vw,12px);border-radius:10px;background:var(--bg-light);border:1.5px solid var(--border);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:var(--text);">Infra</div>
+          <div style="padding:clamp(8px,1vw,12px);border-radius:10px;background:var(--bg-light);border:1.5px solid var(--border);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:var(--text);">Regelgeving</div>
+        </div>
+      </div>
+      <!-- Phone 2: Open vraag -->
+      <div class="phone-mockup">
+        <div class="phone-mockup__header">
+          <div class="phone-mockup__header-dot"></div>
+          <div class="phone-mockup__header-label">BuzzMaster</div>
+        </div>
+        <div class="phone-mockup__body">
+          <div style="font-size:clamp(12px,1.3vw,16px);font-weight:600;color:var(--text);line-height:1.3;margin-bottom:8px;">Wat zou jij als eerste veranderen in je organisatie?</div>
+          <div style="padding:clamp(10px,1.2vw,14px);border-radius:10px;background:var(--bg-light);border:1.5px solid var(--border);font-size:clamp(10px,1vw,13px);color:var(--text-secondary);line-height:1.5;min-height:60px;">Meer ruimte voor lokale initiatieven en betere samenwerking tussen...</div>
+          <div style="align-self:center;padding:clamp(8px,0.9vw,12px) clamp(18px,2vw,28px);border-radius:9999px;background:var(--turquoise);color:#fff;font-size:clamp(10px,1vw,13px);font-weight:600;margin-top:8px;">Verstuur</div>
+        </div>
+      </div>
+      <!-- Phone 3: Quiz -->
+      <div class="phone-mockup">
+        <div class="phone-mockup__header">
+          <div class="phone-mockup__header-dot"></div>
+          <div class="phone-mockup__header-label">BuzzMaster</div>
+        </div>
+        <div class="phone-mockup__body">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+            <div style="font-size:clamp(9px,0.8vw,11px);font-weight:600;color:var(--red-munsell);text-transform:uppercase;letter-spacing:1px;">Vraag 1/3</div>
+            <div style="width:clamp(24px,2.5vw,32px);height:clamp(24px,2.5vw,32px);border-radius:50%;border:2px solid var(--red-munsell);display:flex;align-items:center;justify-content:center;font-size:clamp(10px,1vw,13px);font-weight:600;color:var(--red-munsell);">18</div>
+          </div>
+          <div style="font-size:clamp(12px,1.3vw,16px);font-weight:600;color:var(--text);line-height:1.3;margin-bottom:8px;">Hoeveel organisaties haalden hun duurzaamheidsdoelen?</div>
+          <div style="padding:clamp(7px,0.8vw,10px);border-radius:8px;background:var(--bg-light);border:1.5px solid var(--border);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:var(--text);text-align:center;">1 op de 2</div>
+          <div style="padding:clamp(7px,0.8vw,10px);border-radius:8px;background:var(--red-munsell);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:#fff;text-align:center;">1 op de 4</div>
+          <div style="padding:clamp(7px,0.8vw,10px);border-radius:8px;background:var(--bg-light);border:1.5px solid var(--border);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:var(--text);text-align:center;">1 op de 8</div>
+          <div style="padding:clamp(7px,0.8vw,10px);border-radius:8px;background:var(--bg-light);border:1.5px solid var(--border);font-size:clamp(11px,1.1vw,14px);font-weight:600;color:var(--text);text-align:center;">1 op de 10</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 9 — Investering ═══ -->
+  <div class="slide" data-slide="9">
+    <!-- Organic S-curve — turquoise left -->
+    <svg class="wave-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+      <path d="M0,0 L0,1080 L520,1080 C580,1080 640,1000 660,900 C720,680 600,520 580,380 C560,240 640,100 700,30 C720,5 680,0 640,0 Z" fill="#43CBC1" opacity="0.12"/>
+    </svg>
+    <!-- Accent circles -->
+    <div class="blob-accent" style="bottom:40px;right:60px;width:140px;height:140px;background:var(--turquoise);opacity:0.1;"></div>
+    <div class="blob-accent" style="bottom:80px;right:130px;width:90px;height:90px;background:var(--red-munsell);opacity:0.08;"></div>
+    <div class="blob-accent" style="top:40px;right:80px;width:120px;height:120px;background:var(--midnight-green);opacity:0.06;"></div>
+
+    <div style="position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:60px;">
+      <h2 style="margin-bottom:12px;">Wat kost het<span class="accent">?</span></h2>
+      <p style="font-size:1.1rem;max-width:560px;margin:0 auto 40px;color:var(--text-secondary);line-height:1.7;">
+        De prijs hangt af van het aantal deelnemers, de duur van het event en eventueel maatwerk. Reken op een indicatie tussen:
+      </p>
+      <div style="display:flex;align-items:baseline;gap:16px;margin-bottom:32px;">
+        <span style="font-size:3.2rem;font-weight:900;color:var(--red-munsell);">€ 2.500</span>
+        <span style="font-size:2rem;font-weight:800;color:var(--text-secondary);line-height:1;display:flex;align-items:center;margin-top:-6px;">—</span>
+        <span style="font-size:3.2rem;font-weight:900;color:var(--red-munsell);">€ 4.000</span>
+      </div>
+      <div style="display:flex;gap:24px;flex-wrap:wrap;justify-content:center;max-width:640px;">
+        <div style="background:var(--bg-light);border:1.5px solid var(--border);border-radius:12px;padding:16px 24px;flex:1;min-width:160px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--red-munsell)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Aantal deelnemers</div>
+          <div style="font-size:0.9rem;color:var(--text-secondary);">Van 50 tot 5.000+</div>
+        </div>
+        <div style="background:var(--bg-light);border:1.5px solid var(--border);border-radius:12px;padding:16px 24px;flex:1;min-width:160px;">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--turquoise)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px;"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Duur van het event</div>
+          <div style="font-size:0.9rem;color:var(--text-secondary);">Keynote tot dagvullend</div>
+        </div>
+        <div style="background:var(--bg-light);border:1.5px solid var(--border);border-radius:12px;padding:16px 24px;flex:1;min-width:160px;">
+          <div style="font-size:1.6rem;font-weight:900;color:var(--midnight-green);margin-bottom:6px;">100%</div>
+          <div style="font-size:1rem;font-weight:700;color:var(--text);margin-bottom:4px;">Maatwerk</div>
+          <div style="font-size:0.9rem;color:var(--text-secondary);">Branding, scripts, integraties</div>
+        </div>
+      </div>
+      <p style="font-size:0.9rem;color:var(--text-secondary);margin-top:32px;max-width:480px;line-height:1.6;">
+        Vraag een offerte op maat aan — we denken graag mee over de beste setup voor jouw event.
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 10 — Contact / CTA ═══ -->
+  <div class="slide cta-slide" data-slide="10">
+    <!-- Organic S-curve — turquoise left (brandbook p.26 contact style) -->
+    <svg class="wave-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+      <path d="M0,0 L0,1080 L520,1080 C580,1080 640,1000 660,900 C720,680 600,520 580,380 C560,240 640,100 700,30 C720,5 680,0 640,0 Z" fill="#43CBC1" opacity="0.12"/>
+    </svg>
+    <!-- Accent circles (brandbook p.22) -->
+    <div class="blob-accent" style="bottom:40px;right:60px;width:140px;height:140px;background:var(--turquoise);opacity:0.1;"></div>
+    <div class="blob-accent" style="bottom:80px;right:130px;width:90px;height:90px;background:var(--red-munsell);opacity:0.08;"></div>
+    <div class="blob-accent" style="top:40px;right:80px;width:120px;height:120px;background:var(--midnight-green);opacity:0.06;"></div>
+
+    <div class="cta-box">
+      <img class="logo" src="logo-buzzmaster.png" alt="BuzzMaster">
+      <h2 style="margin-bottom:12px;">Klaar om je publiek<br>te <span class="accent">activeren</span>?</h2>
+      <p style="font-size:1.1rem; max-width:480px; margin:0 auto; color: var(--text-secondary);">
+        Plan een demo en ervaar zelf wat BuzzMaster kan betekenen voor jouw event.
+      </p>
+      <a href="mailto:info@buzzmaster.nl" class="cta-btn">Plan een demo</a>
+      <div class="contact-info">
+        info@buzzmaster.nl<br>
+        buzzmaster.nl
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="slide-counter" id="counter">1 / 10</div>
+<div class="slide-nav">
+  <button class="slide-nav__btn" id="navPrev" aria-label="Vorige slide">&#8592;</button>
+  <button class="slide-nav__btn" id="navNext" aria-label="Volgende slide">&#8594;</button>
+</div>
+<div class="slide-hint" id="slideHint">Gebruik pijltjestoetsen of knoppen om te navigeren</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const counter = document.getElementById('counter');
+  const progress = document.getElementById('progress');
+  const total = slides.length;
+  let current = 0;
+
+  window._edSlideCallbacks = [];
+  function goTo(idx) {
+    if (idx < 0 || idx >= total) return;
+    slides[current].classList.remove('active');
+    current = idx;
+    slides[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${total}`;
+    progress.style.width = `${((current + 1) / total) * 100}%`;
+    window._edSlideCallbacks.forEach(function(fn){ fn(); });
+  }
+
+  document.getElementById('navPrev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('navNext').addEventListener('click', () => goTo(current + 1));
+  const hint = document.getElementById('slideHint');
+  setTimeout(() => hint.classList.add('hidden'), 4000);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current + 1); }
+    if (e.key === 'ArrowLeft')  { e.preventDefault(); goTo(current - 1); }
+    if (e.key === 'Home')       { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')        { e.preventDefault(); goTo(total - 1); }
+  });
+
+  progress.style.width = `${(1 / total) * 100}%`;
+
+</script>
+
+<script type="module" src="/main.js"></script>
+
+
+</body>
+</html>
